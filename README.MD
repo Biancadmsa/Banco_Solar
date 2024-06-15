@@ -8,7 +8,7 @@ Banco Solar
 ## Instalar las dependencias para que nuestro código funcione:
 
 ```
-npm install axios cors dotenv express pg
+npm install axios cors dotenv express pg nodemon
 
 El servidor se inicia con:
 node servidor.js
