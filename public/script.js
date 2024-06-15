@@ -18,25 +18,35 @@ const editUsuario = async (id) => {
     alert("Algo salió mal..." + e);
   }
 };
-
+// Manejar el submit del formulario para agregar un nuevo usuario
 $("#formAgregarUsuario").submit(async (e) => {
   e.preventDefault();
   let nombre = $("#nombreUsuario").val();
   let balance = Number($("#balanceUsuario").val());
+  
+  // Validar el nombre
+  const regex = /^[A-Za-z]+$/;
+  if (!regex.test(nombre)) {
+    alert("El nombre debe contener solo letras.");
+    return;
+  }
+
   try {
     const response = await fetch("http://localhost:3000/usuario", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        nombre,
-        balance,
-      }),
+      body: JSON.stringify({ nombre, balance }),
     });
-    $("#nombreUsuario").val("");
-    $("#balanceUsuario").val("");
-    location.reload();
+
+    if (response.ok) {
+      $("#nombreUsuario").val("");
+      $("#balanceUsuario").val("");
+      location.reload();
+    } else {
+      alert("Algo salió mal ...");
+    }
   } catch (e) {
     alert("Algo salió mal ..." + e);
   }

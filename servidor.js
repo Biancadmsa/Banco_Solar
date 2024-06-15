@@ -35,13 +35,28 @@ app.post("/usuario", async (req, res) => {
     res.status(500).json({ error: "Error al crear el usuario" });
   }
 });
+// Middleware para parsear el cuerpo de las solicitudes como JSON
+app.use(express.json());
 
-app.put("/usuario/:id", async (req, res) => {
+app.put('/usuario/:id', async (req, res) => {
   const { id } = req.params;
   const { nombre, balance } = req.body;
+
+  // Expresión regular para verificar que el nombre solo contenga letras
+  const regex = /^[A-Za-z]+$/;
+
+  // Validar el nombre
+  if (!regex.test(nombre)) {
+    return res.status(400).json({ error: "El nombre debe contener solo letras." });
+  }
+
   try {
     const usuarioActualizado = await actualizarUsuario(id, nombre, balance);
-    res.json(usuarioActualizado);
+    if (usuarioActualizado) {
+      res.json(usuarioActualizado);
+    } else {
+      res.status(404).json({ error: "Usuario no encontrado" });
+    }
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar el usuario" });
   }

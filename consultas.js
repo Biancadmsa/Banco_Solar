@@ -35,8 +35,16 @@ const getTransferencias = async () => {
   }
 };
 
-// Función para crear un nuevo usuario
 const crearUsuario = async (nombre, balance) => {
+  // verificar que el nombre solo contenga letras
+  const regex = /^[A-Za-z]+$/;
+
+  // Validar el nombre
+  if (!regex.test(nombre)) {
+    alert(error, "El nombre debe contener solo letras.");
+    return;
+  }
+
   try {
     const res = await pool.query(
       "INSERT INTO usuarios (nombre, balance) VALUES ($1, $2) RETURNING *",
@@ -45,6 +53,31 @@ const crearUsuario = async (nombre, balance) => {
     return res.rows[0];
   } catch (error) {
     console.error("Error al crear el usuario:", error);
+    return { error: "Error al crear el usuario." };
+  }
+};
+
+// Función para actualizar un usuario
+const actualizarUsuario = async (id, nombre, balance) => {
+  try {
+    const res = await pool.query(
+      "UPDATE usuarios SET nombre = $1, balance = $2 WHERE id = $3 RETURNING *",
+      [nombre, balance, id]
+    );
+    return res.rows[0];
+  } catch (error) {
+    console.error("Error al actualizar el usuario:", error);
+    throw error;
+  }
+};
+
+// Función para eliminar un usuario
+const eliminarUsuario = async (id) => {
+  try {
+    const res = await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+    return res.rowCount > 0;
+  } catch (error) {
+    console.error("Error al eliminar el usuario:", error);
     throw error;
   }
 };
@@ -91,36 +124,11 @@ const crearTransferencia = async (emisorNombre, receptorNombre, monto) => {
   }
 };
 
-// Función para actualizar un usuario
-const actualizarUsuario = async (id, nombre, balance) => {
-  try {
-    const res = await pool.query(
-      "UPDATE usuarios SET nombre = $1, balance = $2 WHERE id = $3 RETURNING *",
-      [nombre, balance, id]
-    );
-    return res.rows[0];
-  } catch (error) {
-    console.error("Error al actualizar el usuario:", error);
-    throw error;
-  }
-};
-
-// Función para eliminar un usuario
-const eliminarUsuario = async (id) => {
-  try {
-    const res = await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
-    return res.rowCount > 0;
-  } catch (error) {
-    console.error("Error al eliminar el usuario:", error);
-    throw error;
-  }
-};
-
 module.exports = {
   getUsuarios,
   getTransferencias,
   crearUsuario,
-  crearTransferencia,
   actualizarUsuario,
   eliminarUsuario,
+  crearTransferencia,
 };
